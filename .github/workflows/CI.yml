@@ -68,7 +68,7 @@ jobs:
         run: npm run lint
 
       - name: Type checking
-        run: npm run check-types
+        run: npm run typecheck
 
       - name: Run unit tests
         run: npm run test
