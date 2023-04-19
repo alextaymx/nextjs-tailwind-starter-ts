@@ -11,6 +11,7 @@ const nextConfig = {
   eslint: {
     dirs: ["."],
   },
+
   poweredByHeader: false,
   trailingSlash: true,
   basePath: "",
