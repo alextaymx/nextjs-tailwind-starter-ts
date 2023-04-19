@@ -10,7 +10,8 @@ jobs:
   build:
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x]
+        # node-version: [16.x, 18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     name: Build with ${{ matrix.node-version }}
@@ -22,7 +23,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          cache: 'npm'
       - run: npm ci
       - run: npm run build-prod
 
@@ -35,6 +36,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    uses: actions/cache@v3
+    with:
+      # See here for caching with `yarn` https://github.com/actions/cache/blob/main/examples.md#node---yarn or you can leverage caching with actions/setup-node https://github.com/actions/setup-node
+      path: |
+        ~/.npm
+        ${{ github.workspace }}/.next/cache
+      # Generate a new cache whenever packages or source files change.
+      key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+      # If source files changed but packages didn't, rebuild from a prior cache.
+      restore-keys: |
+        ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Retrieve Git history, needed to verify commits
@@ -42,7 +56,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          cache: 'npm'
       - run: npm ci
 
       - if: github.event_name == 'pull_request'
